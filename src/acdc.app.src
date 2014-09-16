@@ -1,0 +1,9 @@
+%% -*- erlang -*-
+{application, acdc,
+ [{description, "acdc"},
+  {vsn, "0.1"},
+  {modules, []},
+  {registered, []},
+  {mod, {'acdc_app', []}},
+  {env, []},
+  {applications, [kernel, stdlib, crypto]}]}.
