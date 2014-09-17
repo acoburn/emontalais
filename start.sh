@@ -1,5 +1,7 @@
 #!/bin/sh
-ERLANG_NODE=acdc1
+
+. ./env.sh
+
 EXEC_CMD="sh -c"
 
 check_start()
@@ -22,7 +24,7 @@ check_start()
 }
 
 check_start
-$EXEC_CMD "erl \
+$EXEC_CMD "$ERL \
     -pa ebin deps/*/ebin \
     -boot start_sasl \
     -sname $ERLANG_NODE \

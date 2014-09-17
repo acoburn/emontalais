@@ -1,9 +1,8 @@
 #!/bin/sh
-ERLANG_NODE=acdc1
-HOST=dam08
-PIDFILE=/var/run/emontalais/emontalais.pid
+
+. ./env.sh
+
 EXEC_CMD="sh -c"
-ERL=erl
 
 $EXEC_CMD "$ERL -pa ebin deps/*/ebin \
     -sname ctl_acdc \
