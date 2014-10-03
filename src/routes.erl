@@ -18,13 +18,13 @@ put(_Path, Req) -> Req:not_found().
 post(_Path, Req) -> Req:not_found().
 
 % Internal API
-handle_get_negotiate(Format = "application/xml", Fid, Req) ->
+handle_get_negotiate(Format, Fid, Req) when Format =:= "application/xml" ->
     {ok, Xml} = digital_object:xml(fedora:init(), Fid),
     Req:respond({200, [{"Content-Type", Format ++ "; charset=utf-8"}], 
                      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" ++
                      "<acdc:acdc xmlns:acdc=\"http://acdc.amherst.edu/relationships#\">" ++ Xml ++ "</acdc:acdc>"});
 
-handle_get_negotiate(Format = "application/json", Fid, Req) ->
+handle_get_negotiate(Format, Fid, Req) when Format =:= "application/json" ->
     {ok, Pid} = riakc_pb_socket:start_link("127.0.0.1", 8087),
     {ok, Json} = digital_object:json(Pid, Fid),
     riakc_pb_socket:stop(Pid),
