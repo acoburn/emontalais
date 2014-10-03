@@ -24,42 +24,19 @@ stop() ->
     mochiweb_http:stop(?MODULE).
 
 loop(Req) ->
-    "/" ++ Path = Req:get(path),
     try
         case Req:get(method) of
             Method when Method =:= 'GET'; Method =:= 'HEAD' ->
-                case Path of
-                    "api/object/" ++ Pid ->
-                        case Req:get_header_value("accept") of
-                            "application/xml" ->
-                                {ok, Xml} = digital_object:xml(fedora:init(), Pid),
-                                Req:respond({200, [{"Content-Type", "application/xml; charset=utf-8"}], 
-                                                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" ++
-                                                 "<acdc:acdc xmlns:acdc=\"http://acdc.amherst.edu/relationships#\">" ++ Xml ++ "</acdc:acdc>"});
-                            "application/json" ->
-                                {ok, Json} = digital_object:json(fedora:init(), Pid),
-                                Req:respond({200, [{"Content-Type", "application/json; charset=utf-8"}],
-                                             Json});
-                            _ ->
-                                Req:respond({200, [{"Content-Type", "text/plain"}],
-                                            "Yeah I got it, but how d'ya want it?"})
-                        end;
-
-                    "ping" ->
-                        Req:respond({200, [{"Content-Type", "text/plain"}], "pong"});
-
-                    _ ->
-                        Req:not_found()
-                end;
+                routes:get(Req:get(path), Req);
 
             'DELETE' ->
-                Req:not_found();
+                routes:delete(Req:get(path), Req);
 
             'PUT' ->
-                Req:not_found();
+                routes:put(Req:get(path), Req);
 
             'POST' ->
-                Req:not_found();
+                routes:post(Req:get(path), Req);
 
             _ ->
                 Req:respond({501, [], []})
@@ -68,12 +45,12 @@ loop(Req) ->
         Type:What ->
             case What of
                 {badmatch, {notfound, _}} ->
-                    error_logger:error_msg("Error: ~p ~p~n", [Req:get(method), Path]),
+                    error_logger:error_msg("Error: ~p ~p~n", [Req:get(method), Req:get(path)]),
                     Req:not_found();
 
                 _ ->
                     Report = ["web request failed",
-                              {path, Path},
+                              {path, Req:get(path)},
                               {type, Type}, {what, What},
                               {trace, erlang:get_stacktrace()}],
                     error_logger:error_report(Report),
@@ -83,6 +60,7 @@ loop(Req) ->
     end.
 
 %% Internal API
+
 get_option(Option, Options) ->
     {proplists:get_value(Option, Options), proplists:delete(Option, Options)}.
 

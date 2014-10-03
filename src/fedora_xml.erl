@@ -5,13 +5,24 @@
 
 object(Fedora, Pid) ->
     {object, Xml} = fedora:object(Fedora, Pid),
-    {Doc, _Misc} = xmerl_scan:string(Xml, [{space, normalize}]),
-    [_, Elems] = xmerl:export_simple([Doc], xmerl_xml),
-    {ok, lists:flatten(Elems)}.
+    strip_preamble(Xml).
 
 datastream(Fedora, Pid, Ds) ->
-    {datastream, Xml} = fedora:datastream(Fedora, Pid, Ds),
-    {Doc, _Misc} = xmerl_scan:string(Xml, [{space, normalize}]),
-    [_, Elems] = xmerl:export_simple([Doc], xmerl_xml),
-    {ok, lists:flatten(Elems)}.
+    Res = fedora:datastream(Fedora, Pid, Ds),
+    case Res of
+        {datastream, Xml} ->
+            strip_preamble(Xml);
+        _ ->
+            {notfound}
+    end.
+
+strip_preamble(Xml) ->
+    PreambleStart = string:str(Xml, "<?xml"),
+    PreambleEnd = string:str(Xml, "?>"),
+    case (PreambleStart > 0) and (PreambleEnd > 0) of
+        true ->
+            {ok, string:sub_string(Xml, PreambleEnd + 2)};
+        _ ->
+            {ok, Xml}
+    end.
 
