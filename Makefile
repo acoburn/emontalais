@@ -1,23 +1,19 @@
-PREFIX:=../
-DEST:=$(PREFIX)$(PROJECT)
+ERL ?= erl
+APP := emontalais
 
-REBAR=./rebar
+.PHONY: deps
 
-.PHONY: all edoc test clean build_plt dialyzer app
+all: deps
+	@./rebar compile
 
-all:
-	@$(REBAR) prepare-deps
-
-edoc: all
-	@$(REBAR) doc
-
-test:
-	@rm -rf .eunit
-	@mkdir -p .eunit
-	@$(REBAR) eunit
+deps:
+	@./rebar get-deps
 
 clean:
-	@$(REBAR) clean
+	@./rebar clean
 
-app:
-	@$(REBAR) -r create template=mochiwebapp dest=$(DEST) appid=$(PROJECT)
+distclean: clean
+	@./rebar delete-deps
+
+docs:
+	@erl -noshell -run edoc_run application '$(APP)' '"."' '[]'

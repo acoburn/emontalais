@@ -29,7 +29,7 @@ $EXEC_CMD "$ERL \
     -boot start_sasl \
     -sname $ERLANG_NODE \
     -config config/logging.config \
-    -config config/acdc.config \
+    -config config/emontalais.config \
     -detached \
-    -s acdc \
+    -s emontalais \
     -s reloader"
