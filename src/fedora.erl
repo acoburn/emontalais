@@ -3,9 +3,9 @@
 -export([object/2, datastream/3, init/0]).
 
 init() ->
-    {ok, Uri} = application:get_env(acdc, fedoraurl),
-    {ok, User} = application:get_env(acdc, fedorauser),
-    {ok, Pass} = application:get_env(acdc, fedorapass),
+    {ok, Uri} = application:get_env(emontalais, fedoraurl),
+    {ok, User} = application:get_env(emontalais, fedorauser),
+    {ok, Pass} = application:get_env(emontalais, fedorapass),
     {fedora, Uri, User, Pass}.
 
 
